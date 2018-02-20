@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="{{url_for('static',filename='js/mui.min.js')}}"></script>
+
+		<link href="{{url_for('static',filename='css/mui.min.css')}}" rel="stylesheet" />
+		<link href="{{url_for('static',filename='css/font-awesome.css')}}" rel="stylesheet" />
+		<link href="{{url_for('static',filename='css/roboto.css')}}" rel="stylesheet" />
+		<link href="{{url_for('static',filename='css/music.css')}}" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">音乐播放</h1>
+			<input style="float:right;margin:5px;" value="刷新" type="button" onclick="flushFunc()"  />
+		</header>
+		<div id="container">
+			<div id="player">
+				<img src = "{{url_for('static',filename='images/music.jpg')}}"/>
+				<div class="cover">
+					<div class="controls">
+						<button id="backward" title="Backward" onclick="backword()" ><i class="fa fa-backward fa-4x"></i></button>
+						<button id="play-pause" title="Play" onclick="togglePlayPause()">
+							{% if isPlay: %}
+								 <i class="fa fa-pause fa-5x"></i>
+							{% else: %}
+								 <i class="fa fa-play fa-5x"></i>
+							{% endif %}
+						</button>
+						<button id="forward" title="Forward" onclick="forword()"><i class="fa fa-forward fa-4x"></i></button>
+						<input id="volume" name="volume" min="0" max="1" step="0.1" type="range" onchange="setVolume()" value="{{volume}}" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" charset="utf-8">
+	mui.init();
+	var playpause = document.getElementById("play-pause");
+	//播放停止
+	function togglePlayPause() {
+	   if (playpause.innerHTML == '<i class="fa fa-play fa-5x"></i>') {
+		  playpause.title = "Pause";
+		  playpause.innerHTML = '<i class="fa fa-pause fa-5x"></i>';
+		  mui.post('{{url_for('music_play')}}',{},function(data){
+				if(data == -1){
+					mui.toast('参数错误',{ duration:1000, type:'div' })
+				}else if (data == 0){
+					mui.toast('播放失败',{ duration:1000, type:'div' })
+				}
+			},'json');
+	   } else {
+		  playpause.title = "Play";
+		  playpause.innerHTML = '<i class="fa fa-play fa-5x"></i>';
+		  mui.post('{{url_for('music_pause')}}',{},function(data){
+			  if(data == -1){
+				mui.toast('参数错误',{ duration:1000, type:'div' })
+			  }else if (data == 0){
+				mui.toast('暂停失败',{ duration:1000, type:'div' })
+			  }
+		  },'json');
+	   }
+	}
+	//调整声音
+	function setVolume() {
+		mui.post('{{url_for('music_set_volume')}}',{volume:volume.value},function(data){
+		  if(data == -1){
+			mui.toast('参数错误',{ duration:1000, type:'div' })
+		  }else if (data == 0){
+			mui.toast('调整失败',{ duration:1000, type:'div' })
+		  }
+		},'json')
+ 	}
+ 	function backword(){
+ 		mui.post('{{url_for('music_prev')}}',{volume},function(data){
+		  if(data == -1){
+			mui.toast('参数错误',{ duration:1000, type:'div' })
+		  }else if (data == 0){
+			mui.toast('切换失败',{ duration:1000, type:'div' })
+		  }
+		},'json');
+ 	}
+ 	function forword(){
+ 		mui.post('{{url_for('music_next')}}',{},function(data){
+		  if(data == -1){
+			mui.toast('参数错误',{ duration:1000, type:'div' })
+		  }else if (data == 0){
+			mui.toast('切换失败',{ duration:1000, type:'div' })
+		  }
+		},'json');
+ 	}
+ 	function flushFunc(){
+ 		mui.post('{{url_for('music_flush_dir')}}',{},function(data){
+		  if(data == -1){
+			mui.toast('参数错误',{ duration:1000, type:'div' })
+		  }else if (data == 0){
+			mui.toast('刷新失败',{ duration:1000, type:'div' })
+		  }else{
+		  	mui.toast('刷新完成',{ duration:1000, type:'div' })
+		  }
+		},'json');
+ 	}
+</script>

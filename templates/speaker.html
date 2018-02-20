@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="{{ url_for('static',filename='js/mui.min.js')}}"></script>
+		<link href="{{url_for('static',filename='css/mui.min.css')}}" rel="stylesheet" />
+		 <style>
+        	*,
+			*:after,
+			*:before {
+			  -webkit-box-sizing: border-box;
+			  -moz-box-sizing: border-box;
+			  box-sizing: border-box;
+			  padding: 0;
+			  margin: 0;
+			}
+			.switch {
+			  margin: 50px auto;
+			  position: relative;
+			}
+			.switch label {
+			  width: 100%;
+			  height: 100%;
+			  position: relative;
+			  display: block;
+			}
+			.switch input {
+			  top: 0;
+			  right: 0;
+			  bottom: 0;
+			  left: 0;
+			  opacity: 0;
+			  z-index: 100;
+			  position: absolute;
+			  width: 100%;
+			  height: 100%;
+			  cursor: pointer;
+			}
+			.switch.demo1 {
+			  width: 300px;
+			  height: 300px;
+			}
+			.switch.demo1 label {
+			  border-radius: 50%;
+			  background: #eaeaea;
+			  box-shadow:
+			      0 3px 5px rgba(0,0,0,0.25),
+			      inset 0 1px 0 rgba(255,255,255,0.3),
+			      inset 0 -5px 5px rgba(100,100,100,0.1),
+			      inset 0 5px 5px rgba(255,255,255,0.3);
+			}
+			.switch.demo1 label:after {
+			  content: "";
+			  position: absolute;
+			  top: -8%; right: -8%; bottom: -8%; left: -8%;
+			  z-index: -1;
+			  border-radius: inherit;
+			  background: #ddd;
+			  background: -moz-linear-gradient(#ccc, #fff);
+			  background: -ms-linear-gradient(#ccc, #fff);
+			  background: -o-linear-gradient(#ccc, #fff);
+			  background: -webkit-gradient(linear, 0 0, 0 100%, from(#ccc), to(#fff));
+			  background: -webkit-linear-gradient(#ccc, #fff);
+			  background: linear-gradient(#ccc, #fff);
+			  box-shadow:
+			    inset 0 2px 1px rgba(0,0,0,0.15),
+			    0 2px 5px rgba(200,200,200,0.1);
+			}
+			.switch.demo1 label:before {
+			  content: "";
+			  position: absolute;
+			  width: 20%;
+			  height: 20%;
+			  border-radius: inherit;
+			  left: 40%;
+			  top: 40%;
+			  background: #969696;
+			  background: radial-gradient(40% 35%, #ccc, #969696 60%);
+			  box-shadow:
+			      inset 0 2px 4px 1px rgba(0,0,0,0.3),
+			      0 1px 0 rgba(255,255,255,1),
+			      inset 0 1px 0 white;
+			}
+			.switch.demo1 input:checked ~ label {
+			  background: #dedede;
+			  background: -moz-linear-gradient(#dedede, #fdfdfd);
+			  background: -ms-linear-gradient(#dedede, #fdfdfd);
+			  background: -o-linear-gradient(#dedede, #fdfdfd);
+			  background: -webkit-gradient(linear, 0 0, 0 100%, from(#dedede), to(#fdfdfd));
+			  background: -webkit-linear-gradient(#dedede, #fdfdfd);
+			  background: linear-gradient(#dedede, #fdfdfd);
+			}
+			.switch.demo1 input:checked ~ label:before {
+			  background: #25d025;
+			  background: radial-gradient(40% 35%, #5aef5a, #25d025 60%);
+			  box-shadow:
+			      inset 0 3px 5px 1px rgba(0,0,0,0.1),
+			      0 1px 0 rgba(255,255,255,0.4),
+			      0 0 10px 2px rgba(0, 210, 0, 0.5);
+			}
+        </style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">喊话</h1>
+		</header>
+		<div class="mui-content">
+			<div class="container">
+				<section class="main">
+					<div class="switch demo1">
+						<input type="checkbox" onclick="tap(this)">
+						<label></label>
+					</div>
+				</section>
+       		</div>
+			<p id="log" style="text-align:center;">点击开始录制</p>
+		</div>
+		<script type="text/javascript" charset="utf-8">
+			function formatTime(time){
+				h = Math.round(time/60)
+				m = time%60
+				return ''+(h>9?h:'0'+h)+":"+(m>9?m:'0'+m)
+			}
+			var audio_context;
+			var recorder;
+			user_id = '{{user_id}}'
+			interval = null
+			function tap(t){
+				if(t.checked){//打开
+					log.innerHTML='录制中....   '
+					recorder && recorder.record();
+					time = 0
+					interval = setInterval(function(){
+						time = time+1
+						log.innerHTML='录制中....   '+formatTime(time)
+					},1000)
+				}else{//关闭
+					clearInterval(interval)
+					log.innerHTML='点击开始录制'
+					recorder && recorder.stop();
+					recorder && recorder.exportWAV(function(blob) {
+					  filename = new Date().toISOString().replace(/:/g,'-').replace(/\./g,'-') +'-'+user_id+'.wav';
+					  fd = new FormData()
+					  fd.append('filename',filename)
+					  fd.append('file',blob)
+					  var request = new XMLHttpRequest();
+                      request.onreadystatechange = function(){
+                        if (request.readyState== 4&& request.status== 200){
+                            mui.toast('上传完成',{ duration:1000, type:'div' })
+                        }
+                      };
+					  request.open("POST", "{{url_for('upload_wav')}}");
+					  request.send(fd);
+                      mui.toast('正在上传',{ duration:1000, type:'div' })
+					});
+					recorder.clear();
+				}
+			}
+
+			window.onload = function init() {
+				try {
+					window.AudioContext = window.AudioContext || window.webkitAudioContext;
+					navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+					audio_context = new AudioContext;
+				} catch (e) {
+					alert('No web audio support in this browser!');
+				}
+
+				function startUserMedia(stream) {
+					var input = audio_context.createMediaStreamSource(stream);
+					recorder = new Recorder(input);
+				}
+				navigator.getUserMedia({audio: true}, startUserMedia, function(e) {alert('no live audio input:'+e)
+					console.info(e)
+				});
+			 };
+			 mui.init();
+		</script>
+		<script src="{{ url_for('static',filename='js/recorder.js')}}"></script>
+	</body>
+
+</html>
