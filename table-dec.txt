@@ -1,0 +1,26 @@
+用户表：
+  表名：user
+  字段： id,       唯一主键
+        name,     用户名称
+        password, 密码
+        type      用户类型：管理员1，普通用户0
+房间表：
+  表名：room
+  字段： id        唯一主键
+        name      房间名
+        desc      房间描述
+开关表：
+  表名：switch
+  字段： id        唯一编号
+        name      开关名称
+        desc      开关描述
+        device_id 设备编号
+        room_id   房间编号
+设备表：
+  表名：device
+  字段： id        唯一编号
+        name      设备名称
+        code      设备编码
+        status    设备状态：on 1,off 0
+        value     状态值
+        desc      描述

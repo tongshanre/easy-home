@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="viewport" content="width=switch-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title></title>
 		<script src="{{ url_for('static',filename='js/mui.min.js')}}"></script>
 		<link href="{{url_for('static',filename='css/mui.min.css')}}" rel="stylesheet" />
@@ -12,7 +12,7 @@
 				font-size : 10px;
 				color: gray;
 			}
-			.d_desc{
+			.s_desc{
 				color: gray;
 			}
 		</style>
@@ -28,17 +28,17 @@
 				{% for room in rooms%}
 				<li class="mui-table-view-cell mui-collapse mui-active">
 					<a class="mui-navigate-right" href="#">房间名：{{room.name}}<span class="r_desc">({{room.desc}})</span></a>
-					{% for device in room.devices%}
+					{% for switch in room.switchs%}
 					<div class="mui-collapse-content">
-						<p style="display: inline-block;">设备名：{{device.name}}<font class="d_desc">（{{device.desc}}）</font></p>
-						<div d_id="{{device.id}}" code="{{device.code}}" class="mui-switch {% if device.status==1 %}mui-active{% endif%} " style="float: right;">
+						<p style="display: inline-block;">开关名：{{switch.name}}<font class="s_desc">（{{switch.desc}}）</font></p>
+						<div s_id="{{switch.id}}" code="{{switch.code}}" class="mui-switch {% if switch.status==1 %}mui-active{% endif%} " style="float: right;">
 							<div class="mui-switch-handle" style="float: right;"></div>
 						</div>
 					</div>
 					{% endfor %}
 					{% if user_type == 1 %}
 					<div class="mui-collapse-content">
-						<button value="{{room.id}}" type="button" class="mui-btn" style="width:100%;color:gray;font-size:10px;">添加设备</button>
+						<button value="{{room.id}}" type="button" class="mui-btn" style="width:100%;color:gray;font-size:10px;">添加开关</button>
 					</div>
 					{% endif %}
 				</li>
@@ -64,26 +64,30 @@
 				<button id='r_cancel' type="button" class="mui-btn mui-btn-danger">取消</button>
 			</div>
 		</div>
-		<!-- 添加设备 -->
-		<div id="add_device_dialog" class="mui-popover" style="padding : 10px;margin:0 10%;width:80%;">
-			<p style="width:100%;text-align:center">添加设备</p>
+		<!-- 添加开关 -->
+		<div id="add_switch_dialog" class="mui-popover" style="padding : 10px;margin:0 10%;width:80%;">
+			<p style="width:100%;text-align:center">添加开关</p>
 			<div class="mui-input-row">
 				<label>名称</label>
-				<input id="d_name" type="text" class="mui-input-clear" placeholder="请输入设备名">
-			</div>
-			<div class="mui-input-row">
-				<label>编码</label>
-				<input id="d_code" type="text" class="mui-input-clear" placeholder="请输入设备编码">
+				<input id="s_name" type="text" class="mui-input-clear" placeholder="请输入开关名">
 			</div>
 			<div class="mui-input-row">
 				<label>描述</label>
-				<input id="d_desc" type="text" class="mui-input-clear" placeholder="请输入描述">
+				<input id="s_desc" type="text" class="mui-input-clear" placeholder="请输入描述">
+			</div>
+			<div class="mui-input-row">
+				<label>设备</label>
+				<select id="s_device_id" class="mui-h5" style="margin: auto;">
+					{% for device in devices%}
+						<option value="{{device.id}}">{{device.name}}</option>
+					{% endfor %}
+				</select>
 			</div>
 			<div class="mui-button-row">
-				<button id="d_confirm" type="button" class="mui-btn mui-btn-primary">确认</button>
-				<button id='d_cancel' type="button" class="mui-btn mui-btn-danger">取消</button>
+				<button id="s_confirm" type="button" class="mui-btn mui-btn-primary">确认</button>
+				<button id='s_cancel' type="button" class="mui-btn mui-btn-danger">取消</button>
 			</div>
-			<input id="d_room_id" type="hidden"/>
+			<input id="s_room_id" type="hidden"/>
 		</div>
 	</body>
 
@@ -93,12 +97,12 @@
 	switchs = document.getElementsByClassName('mui-switch')
 	for(var index = 0; index < switchs.length; index++) {
 		switchs[index].addEventListener("toggle", function(event) {
-			d_id = event.srcElement.getAttribute('d_id')
+			s_id = event.srcElement.getAttribute('s_id')
 			//var mask = mui.createMask(function(){return false;}); //callback为用户点击蒙版时自动执行的回调；
 			status = event.detail.isActive?1:0
 			//mask.show(); //显示遮罩
 			new Audio('static/voice/da.wav').play();
-			mui.post('{{url_for('switch_toggle')}}',{d_id:d_id,status:status},function(data){
+			mui.post('{{url_for('switch_toggle')}}',{s_id:s_id,status:status},function(data){
 				//mask.close();
 				if(data == -1){
 					mui.toast('参数错误',{ duration:1000, type:'div' })
@@ -123,35 +127,35 @@
 			}else if (data == 0){
 				mui.toast('创建失败',{ duration:1000, type:'div' })
 			}else{
-				window.location.href = '{{url_for('switchs')}}'
+				window.location.href = '{{url_for('rooms')}}'
 			}
 		},'json');
     });
     mui('.mui-popover').on('tap', '#r_cancel', function(e) {
 		mui('#add_room_dialog').popover('hide');
     });
-    //添加设备
+    //添加开关
     mui('.mui-table-view-cell').on('tap', '.mui-btn', function(e) {
-    	document.getElementById('d_room_id').value=e.srcElement.value
-		mui('#add_device_dialog').popover('show');//show hide toggle
+    	document.getElementById('s_room_id').value=this.value
+			mui('#add_switch_dialog').popover('show');//show hide toggle
     });
-    mui('#add_device_dialog').on('tap', '#d_confirm', function(e) {
+    mui('#add_switch_dialog').on('tap', '#s_confirm', function(e) {
     	params = {}
-    	params.d_name = document.getElementById('d_name').value
-    	params.d_code = document.getElementById('d_code').value
-    	params.d_desc = document.getElementById('d_desc').value
-    	params.d_room_id = document.getElementById('d_room_id').value
-    	mui.post('{{url_for('add_device')}}',params,function(data){
+    	params.s_name = document.getElementById('s_name').value
+    	params.s_desc = document.getElementById('s_desc').value
+			params.s_device_id = document.getElementById('s_device_id').value
+    	params.s_room_id = document.getElementById('s_room_id').value
+    	mui.post('{{url_for('add_switch')}}',params,function(data){
 			if(data == -1){
 				mui.toast('参数错误',{ duration:1000, type:'div' })
 			}else if (data == 0){
 				mui.toast('创建失败',{ duration:1000, type:'div' })
 			}else{
-				window.location.href = '{{url_for('switchs')}}'
+				window.location.href = '{{url_for('rooms')}}'
 			}
 		},'json');
     });
-     mui('#add_device_dialog').on('tap', '#d_cancel', function(e) {
-    	mui('#add_device_dialog').popover('hide');//show hide toggle
+     mui('#add_switch_dialog').on('tap', '#s_cancel', function(e) {
+    	mui('#add_switch_dialog').popover('hide');//show hide toggle
     });
 </script>

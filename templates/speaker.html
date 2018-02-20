@@ -113,7 +113,7 @@
 			<div class="container">
 				<section class="main">
 					<div class="switch demo1">
-						<input type="checkbox" onclick="tap(this)">
+						<input id='radioButton' type="checkbox" onclick="tap(this)">
 						<label></label>
 					</div>
 				</section>
@@ -169,15 +169,25 @@
 					audio_context = new AudioContext;
 				} catch (e) {
 					alert('No web audio support in this browser!');
+					log.innerHTML='本设备不支持声音录制！！！';
+					document.getElementById('radioButton').onclick=null;
 				}
 
 				function startUserMedia(stream) {
 					var input = audio_context.createMediaStreamSource(stream);
 					recorder = new Recorder(input);
 				}
-				navigator.getUserMedia({audio: true}, startUserMedia, function(e) {alert('no live audio input:'+e)
-					console.info(e)
-				});
+				try{
+					navigator.getUserMedia({audio: true}, startUserMedia, function(e) {alert('no live audio input:'+e)
+						console.info(e)
+						log.innerHTML='本设备不支持声音录制！！！';
+						document.getElementById('radioButton').onclick=null;
+					});
+				}catch(e){
+					log.innerHTML='本设备不支持声音录制！！！';
+					document.getElementById('radioButton').onclick=null;
+				}
+
 			 };
 			 mui.init();
 		</script>

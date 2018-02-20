@@ -3,25 +3,26 @@ import json
 from flask import  Flask, render_template, redirect, url_for, request, session
 from sqlit_m import SqlUtil
 from music_m import MusicUtil
-from gpio_m import GPioUtil
+#from gpio_m import GPioUtil
 import config, os
 
 
 app = Flask(__name__)
 app.config.from_object(config)
 
-gpioUtil = GPioUtil()
+#gpioUtil = GPioUtil()
 
 sqlUtil = SqlUtil()
 musicUtil = MusicUtil(app.config['MUSIC_DIR'], app.config['UPLOAD_FOLDER'])
 musicUtil.run_thread()
 
 
+#首页
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
+#用户
 @app.route('/user')
 def user():
     users = sqlUtil.query_users()
@@ -71,17 +72,21 @@ def login():
         session['user_id'] = u.id
         return '1'
 
+
+#菜单
 @app.route('/menu')
 def menu():
     return render_template('menu.html', user_type=session['user_type'])
 
 
-@app.route('/switchs')
-def switchs():
+#房间
+@app.route('/rooms')
+def rooms():
     rooms = sqlUtil.query_rooms()
     for room in rooms:
-        room.devices = sqlUtil.query_devices_by_roomid(room.id)
-    return render_template('switchs.html', rooms=rooms, user_type=session['user_type'])
+        room.switchs = sqlUtil.query_switchs_by_roomid(1)
+    devices = sqlUtil.query_devices();
+    return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
 
 
 @app.route('/switch_toggle', methods=['POST'])
@@ -93,7 +98,7 @@ def switch_toggle():
     flag = False;
     if '1' == status:
         flag = True
-    GPioUtil.change(device.code, flag)
+    #GPioUtil.change(device.code, flag)
     #更新数据库数据
     sqlUtil.update_device(device.id, device.name, device.code, status, device.value, device.desc)
     return '1'
@@ -112,19 +117,45 @@ def add_room():
         return '0'
 
 
+#开关
+@app.route('/add_switch', methods=['POST'])
+def add_switch():
+    s_name = request.form['s_name']
+    s_desc = request.form['s_desc']
+    s_device_id = request.form['s_device_id']
+    s_room_id = request.form['s_room_id']
+    flag = sqlUtil.add_switch(s_name,s_desc,s_device_id,s_room_id)
+    if flag:
+        return '1'
+    else :
+        return '0'
+
+#设备
+@app.route('/devces')
+def devices():
+    devices = sqlUtil.query_devices();
+    return render_template('devices.html', devices=devices)
+
 @app.route('/add_device', methods=['POST'])
 def add_device():
     d_name = request.form['d_name']
     d_code = request.form['d_code']
     d_desc = request.form['d_desc']
-    d_room_id = request.form['d_room_id']
-    flag = sqlUtil.add_device(d_name, d_code, 0, 0, d_desc, d_room_id)
+    flag = sqlUtil.add_device(d_name, d_code, 0, 0, d_desc)
     if flag:
         return '1'
     else:
         return '0'
 
+@app.route('/del_device', methods=['POST'])
+def del_device():
+    if sqlUtil.del_device(request.form['d_id']):
+        return '1'
+    else:
+        return '0'
 
+
+#音乐播放
 @app.route('/music')
 def music():
     isPlay = musicUtil.is_play()
@@ -185,4 +216,5 @@ def upload_wav():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', ssl_context='adhoc')
+    #app.run(host='0.0.0.0', ssl_context='adhoc')
+    app.run(host='0.0.0.0')

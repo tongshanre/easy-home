@@ -1,7 +1,7 @@
 #encoding:utf-8
 import sqlite3, logging
 
-conn = sqlite3.connect('easy_home1.db')
+conn = sqlite3.connect('easy_home.db')
 
 #1. 创建用户表
 class User(object):
@@ -19,8 +19,8 @@ conn.execute('create table IF NOT EXISTS user(id integer primary key autoincreme
 conn.commit()
 #2. 创建初始用户
 conn.execute("insert into user (name,password,type)values('admin','admin',1)")
-#conn.execute("delete from user")
 conn.commit()
+
 #3. 创建房间表
 class Room(object):
     id = -1
@@ -40,7 +40,34 @@ conn.execute('''
     )
 ''')
 conn.commit()
-#4. 创建设备表
+
+#4. 创建开关表
+class Switch(object):
+    id = -1
+    name = ''
+    desc = ''
+    device_id = -1
+    room_id = -1
+
+    def __init__(self, params):
+        self.id = params[0]
+        self.name = params[1]
+        self.desc = params[2]
+        self.device_id = params[3]
+        self.room_id = params[4]
+
+conn.execute('''
+    create table if not exists switch(
+        id integer primary key autoincrement,
+        name varchar(50) not null,
+        desc varchar(255) default '',
+        device_id int not null,
+        room_id int not null
+    )
+''')
+conn.commit();
+
+#5. 创建设备表
 class Device(object):
     id = -1
     name = ''
@@ -48,7 +75,7 @@ class Device(object):
     status = -1
     value = -1
     desc = ''
-    room_id = -1
+
     def __init__(self, params):
         self.id = params[0]
         self.name = params[1]
@@ -56,7 +83,6 @@ class Device(object):
         self.status = params[3]
         self.value = params[4]
         self.desc = params[5]
-        self.room_id = params[6]
 
 
 conn.execute('''
@@ -66,13 +92,13 @@ conn.execute('''
         code varchar(50) not null,
         status int not null,
         value  int default '-1',
-        desc varchar(255) default '',
-        room_id integer not null
+        desc varchar(255) default ''
     )
 ''')
 conn.commit()
-conn.close()
 
+
+conn.close();
 class SqlUtil(object):
 
     def __get_conn(self):
@@ -155,10 +181,31 @@ class SqlUtil(object):
             print rooms.append(Room(room))
         conn.close()
         return rooms
-
-    def add_device(self, name, code,status, value, desc, room_id):
+    def add_switch(self,name,desc,device_id,room_id):
         conn = self.__get_conn()
-        conn.execute('insert into device (name,code,status,value,desc,room_id)values(?,?,?,?,?,?)', (name, code, status, value, desc, room_id))
+        conn.execute('insert into switch (name,desc,device_id,room_id)values(?,?,?,?)',(name,desc,device_id,room_id))
+        conn.commit()
+        conn.close()
+        return True
+
+    def del_switch(self, id):
+        conn = self.__get_conn();
+        conn.execute('delete from switch where id = ?',(id));
+
+    def query_switchs_by_roomid(self, roomid):
+        conn = self.__get_conn();
+        print '***********'
+        print roomid
+        cursor  = conn.cursor().execute('select * from switch where room_id=?', (roomid))
+        switchs = []
+        for switch in cursor:
+            switchs.append(Switch(switch))
+        conn.close()
+        return switchs
+
+    def add_device(self, name, code,status, value, desc):
+        conn = self.__get_conn()
+        conn.execute('insert into device (name,code,status,value,desc)values(?,?,?,?,?)', (name, code, status, value, desc))
         conn.commit()
         conn.close()
         return True
@@ -170,25 +217,10 @@ class SqlUtil(object):
         conn.close()
         return True
 
-    def update_device(self, id, name, code, status, value, desc):
-        conn = self.__get_conn()
-        conn.execute('update device set name=?,code=?,status=?,value=?,desc=? where id = ?', (name, code, status, value, desc, id))
-        conn.commit()
-        conn.close()
-        return True
 
-    def query_device_by_id(self, id):
+    def query_devices(self):
         conn = self.__get_conn()
-        cursor  = conn.cursor().execute('select * from device where id=?', (id))
-        for device in cursor:
-            conn.close()
-            return Device(device)
-        conn.close()
-        return None
-
-    def query_devices_by_roomid(self, room_id):
-        conn = self.__get_conn()
-        cursor = conn.cursor().execute('select * from device where room_id=?', (str(room_id)))
+        cursor = conn.cursor().execute('select * from device')
         devices = []
         for device in cursor:
             print devices.append(Device(device))
