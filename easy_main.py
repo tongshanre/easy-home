@@ -239,14 +239,16 @@ def upload_wav():
 def switch_toggle():
     d_id = request.form['d_id']
     status = request.form['status']
-    device = sqlUtil.query_switch_by_id(d_id)
+    switch = sqlUtil.query_switch_by_id(d_id)
+    
+    print switch
     #更新开关状态
     flag = False;
     if '1' == status:
         flag = True
-    GPioUtil.change(device.code, flag)
+    GPioUtil.change(switch.code, flag)
     #更新数据库数据
-    sqlUtil.update_device(device.id, device.name, device.code, status, device.value, device.desc)
+    sqlUtil.update_device(switch.id, switch.name, switch.code, status, switch.value, switch.desc)
     return '1'
 
 
