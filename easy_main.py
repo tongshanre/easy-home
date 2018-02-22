@@ -3,7 +3,7 @@ import json
 from flask import  Flask, render_template, redirect, url_for, request, make_response, session
 from sqlit_m import SqlUtil
 from music_m import MusicUtil
-#from gpio_m import GPioUtil
+from gpio_m import GPioUtil
 import config, os, datetime
 
 
@@ -13,6 +13,7 @@ app.config.from_object(config)
 #gpioUtil = GPioUtil()
 
 sqlUtil = SqlUtil()
+gpioUtil = GPioUtil()
 musicUtil = MusicUtil(app.config['MUSIC_DIR'], app.config['UPLOAD_FOLDER'])
 musicUtil.run_thread()
 
@@ -32,10 +33,19 @@ def menu():
 #导航-房间
 @app.route('/to_rooms')
 def rooms():
+    devices = sqlUtil.query_devices();
+    statusMap = {};
+    codeMap = {};
+    for device in devices:
+        statusMap[str(device.id)]=device.status
+        codeMap[str(device.id)]=device.code
     rooms = sqlUtil.query_rooms()
     for room in rooms:
         room.switchs = sqlUtil.query_switchs_by_roomid(room.id)
-    devices = sqlUtil.query_devices();
+        for switch in room.switchs:
+            switch.status = statusMap[str(switch.device_id)]
+            switch.code = codeMap[str(switch.device_id)]
+
     return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
 
 
@@ -237,18 +247,16 @@ def upload_wav():
 #功能-开关控制接口
 @app.route('/switch_toggle', methods=['POST'])
 def switch_toggle():
-    d_id = request.form['d_id']
+    d_id = request.form['s_id']
     status = request.form['status']
     switch = sqlUtil.query_switch_by_id(d_id)
-    
-    print switch
     #更新开关状态
     flag = False;
     if '1' == status:
         flag = True
-    GPioUtil.change(switch.code, flag)
+    gpioUtil.change(switch.code, flag)
     #更新数据库数据
-    sqlUtil.update_device(switch.id, switch.name, switch.code, status, switch.value, switch.desc)
+    sqlUtil.update_device(switch.device_id, status, -1)
     return '1'
 
 

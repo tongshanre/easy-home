@@ -159,6 +159,17 @@ class SqlUtil(object):
         conn.close()
         return switchs
 
+    def query_switch_by_id(self, id):
+        conn = self.__get_conn();
+        result = None
+        cursor = conn.cursor().execute('select * from switch where id='+str(id))
+        for switch in cursor:
+            result = Switch(switch)
+            break;
+        conn.close()
+        return result
+
+
     def add_device(self, name, code,status, value, desc):
         conn = self.__get_conn()
         conn.execute('insert into device (name,code,status,value,desc)values(?,?,?,?,?)', (name, code, status, value, desc))
@@ -170,6 +181,13 @@ class SqlUtil(object):
         conn = self.__get_conn()
         conn.execute('delete from switch where device_id= ?', (id))
         conn.execute('delete from device where id= ?', (id))
+        conn.commit()
+        conn.close()
+        return True
+
+    def update_device(self, id, status, value):
+        conn = self.__get_conn()
+        conn.execute('update device set status=?,value=? where id =?', (status, value, id))
         conn.commit()
         conn.close()
         return True
