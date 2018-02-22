@@ -202,6 +202,15 @@ class SqlUtil(object):
         conn.close()
         return devices
 
+    def query_device_by_id(self, id):
+        conn = self.__get_conn()
+        cursor = conn.cursor().execute('select * from device where id='+str(id))
+        result = None
+        for device in cursor:
+            result = Device(device)
+        conn.close()
+        return result
+
 if __name__ == '__main__':
     conn = sqlite3.connect('easy_home.db')
     conn.execute('''

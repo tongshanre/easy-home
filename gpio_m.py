@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 class GPioUtil():
     __ports = [2,3,4,5]
     def __init__(self):
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.__ports, GPIO.OUT)
     def change(self,id,status):
