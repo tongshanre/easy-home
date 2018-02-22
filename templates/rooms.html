@@ -103,7 +103,6 @@
 	switchs = document.getElementsByClassName('mui-switch')
 	for(var index = 0; index < switchs.length; index++) {
 		switchs[index].addEventListener("toggle", function(event) {
-			console.info(this)
 			s_id = this.getAttribute('s_id')
 			status = event.detail.isActive?1:0
 			new Audio('static/voice/da.wav').play();
