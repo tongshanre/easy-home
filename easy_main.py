@@ -32,10 +32,16 @@ def menu():
 #导航-房间
 @app.route('/to_rooms')
 def rooms():
+    devices = sqlUtil.query_devices();
+    statusMap = {};
+    for device in devices:
+        statusMap[str(device.id)]=device.status
     rooms = sqlUtil.query_rooms()
     for room in rooms:
         room.switchs = sqlUtil.query_switchs_by_roomid(room.id)
-    devices = sqlUtil.query_devices();
+        for switch in room.switchs:
+            switch.status = statusMap[str(switch.device_id)]
+
     return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
 
 
@@ -237,16 +243,16 @@ def upload_wav():
 #功能-开关控制接口
 @app.route('/switch_toggle', methods=['POST'])
 def switch_toggle():
-    d_id = request.form['d_id']
+    d_id = request.form['s_id']
     status = request.form['status']
-    device = sqlUtil.query_device_by_id(d_id)
+    switch = sqlUtil.query_switch_by_id(d_id)
     #更新开关状态
     flag = False;
     if '1' == status:
         flag = True
     #GPioUtil.change(device.code, flag)
     #更新数据库数据
-    sqlUtil.update_device(device.id, device.name, device.code, status, device.value, device.desc)
+    sqlUtil.update_device(switch.device_id, status, -1)
     return '1'
 
 
