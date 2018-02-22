@@ -10,9 +10,8 @@ import config, os, datetime
 app = Flask(__name__)
 app.config.from_object(config)
 
-#gpioUtil = GPioUtil()
-
 sqlUtil = SqlUtil()
+#gpioUtil = GPioUtil()
 musicUtil = MusicUtil(app.config['MUSIC_DIR'], app.config['UPLOAD_FOLDER'])
 musicUtil.run_thread()
 
@@ -246,6 +245,7 @@ def switch_toggle():
     d_id = request.form['s_id']
     status = request.form['status']
     switch = sqlUtil.query_switch_by_id(d_id)
+    device = sqlUtil.query_device_by_id(switch.device_id)
     #更新开关状态
     flag = False;
     if '1' == status:
