@@ -103,13 +103,11 @@
 	switchs = document.getElementsByClassName('mui-switch')
 	for(var index = 0; index < switchs.length; index++) {
 		switchs[index].addEventListener("toggle", function(event) {
-			s_id = event.srcElement.getAttribute('s_id')
-			//var mask = mui.createMask(function(){return false;}); //callback为用户点击蒙版时自动执行的回调；
+			console.info(this)
+			s_id = this.getAttribute('s_id')
 			status = event.detail.isActive?1:0
-			//mask.show(); //显示遮罩
 			new Audio('static/voice/da.wav').play();
 			mui.post('{{url_for('switch_toggle')}}',{s_id:s_id,status:status},function(data){
-				//mask.close();
 				if(data == -1){
 					mui.toast('参数错误',{ duration:1000, type:'div' })
 				}else if (data == 0){
