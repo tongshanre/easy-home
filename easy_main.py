@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 import json
-from flask import  Flask, render_template, redirect, url_for, request, session
+from flask import  Flask, render_template, redirect, url_for, request, make_response, session
 from sqlit_m import SqlUtil
 from music_m import MusicUtil
 #from gpio_m import GPioUtil
-import config, os
+import config, os, datetime
 
 
 app = Flask(__name__)
@@ -22,13 +22,75 @@ musicUtil.run_thread()
 def index():
     return render_template('index.html')
 
-#用户
-@app.route('/user')
+
+#导航-菜单
+@app.route('/to_menu')
+def menu():
+    return render_template('menu.html', user_type=session['user_type'])
+
+
+#导航-房间
+@app.route('/to_rooms')
+def rooms():
+    rooms = sqlUtil.query_rooms()
+    for room in rooms:
+        room.switchs = sqlUtil.query_switchs_by_roomid(room.id)
+    devices = sqlUtil.query_devices();
+    return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
+
+
+#导航-音乐
+@app.route('/to_music')
+def music():
+    isPlay = musicUtil.is_play()
+    volume = musicUtil.get_volume()
+    return render_template('music.html', isPlay=isPlay, volume=volume)
+
+#导航-喊话
+@app.route('/to_speaker')
+def speaker():
+    return render_template('speaker.html', user_id=session['user_id'])
+
+
+#导航-设备
+@app.route('/to_devces')
+def devices():
+    devices = sqlUtil.query_devices();
+    return render_template('devices.html', devices=devices)
+
+
+#导航-用户
+@app.route('/to_user')
 def user():
     users = sqlUtil.query_users()
     return render_template('user.html', users=users, user_type=session['user_type'])
 
 
+#功能-登录
+@app.route('/login', methods=['POST'])
+def login():
+    name = request.form['name']
+    password = request.form['password']
+    if name == '':
+        return '-1'
+    if password == '':
+        return '-1'
+    return login_func(name,password)
+
+def login_func(name, password):
+    u = sqlUtil.query_user_by_np(name,password)
+    if u == None:
+        return make_response('0')
+    else:
+        response = make_response('1')
+        session['user_type'] = u.type
+        session['user_id'] = u.id
+        outdate=datetime.datetime.today() + datetime.timedelta(days=30)
+        response.set_cookie('name',name, expires=outdate)
+        response.set_cookie('password',password, expires=outdate)
+        return response
+
+#功能-用户
 @app.route('/add_user', methods=['POST'])
 def add_user():
     u_name = request.form['u_name']
@@ -55,55 +117,7 @@ def del_user():
         return '0'
 
 
-@app.route('/login', methods=['POST'])
-def login():
-    print request.form
-    name = request.form['name']
-    password = request.form['password']
-    if name == '':
-        return '-1'
-    if password == '':
-        return '-1'
-    u = sqlUtil.query_user_by_np(name,password)
-    if u == None:
-        return '0'
-    else:
-        session['user_type'] = u.type
-        session['user_id'] = u.id
-        return '1'
-
-
-#菜单
-@app.route('/menu')
-def menu():
-    return render_template('menu.html', user_type=session['user_type'])
-
-
-#房间
-@app.route('/rooms')
-def rooms():
-    rooms = sqlUtil.query_rooms()
-    for room in rooms:
-        room.switchs = sqlUtil.query_switchs_by_roomid(1)
-    devices = sqlUtil.query_devices();
-    return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
-
-
-@app.route('/switch_toggle', methods=['POST'])
-def switch_toggle():
-    d_id = request.form['d_id']
-    status = request.form['status']
-    device = sqlUtil.query_device_by_id(d_id)
-    #更新开关状态
-    flag = False;
-    if '1' == status:
-        flag = True
-    #GPioUtil.change(device.code, flag)
-    #更新数据库数据
-    sqlUtil.update_device(device.id, device.name, device.code, status, device.value, device.desc)
-    return '1'
-
-
+#功能-房间
 @app.route('/add_room', methods=['POST'])
 def add_room():
     r_name = request.form['r_name']
@@ -117,7 +131,17 @@ def add_room():
         return '0'
 
 
-#开关
+@app.route('/del_room', methods=['POST'])
+def del_room():
+    r_id = request.form['r_id']
+    flag = sqlUtil.del_room(r_id)
+    if flag:
+        return '1'
+    else :
+        return '0'
+
+
+#功能-开关
 @app.route('/add_switch', methods=['POST'])
 def add_switch():
     s_name = request.form['s_name']
@@ -130,12 +154,18 @@ def add_switch():
     else :
         return '0'
 
-#设备
-@app.route('/devces')
-def devices():
-    devices = sqlUtil.query_devices();
-    return render_template('devices.html', devices=devices)
 
+@app.route('/del_switch', methods=['POST'])
+def del_switch():
+    s_id = request.form['s_id']
+    flag = sqlUtil.del_switch(s_id)
+    if flag:
+        return '1'
+    else :
+        return '0'
+
+
+#功能-设备
 @app.route('/add_device', methods=['POST'])
 def add_device():
     d_name = request.form['d_name']
@@ -155,14 +185,7 @@ def del_device():
         return '0'
 
 
-#音乐播放
-@app.route('/music')
-def music():
-    isPlay = musicUtil.is_play()
-    volume = musicUtil.get_volume()
-    return render_template('music.html', isPlay=isPlay, volume=volume)
-
-
+#功能-音乐播放
 @app.route('/music/play', methods=['GET', 'POST'])
 def music_play():
     musicUtil.play()
@@ -200,11 +223,7 @@ def music_flush_dir():
     return '1'
 
 
-@app.route('/speaker')
-def speaker():
-    return render_template('speaker.html', user_id=session['user_id'])
-
-
+#功能-喊话上传接口
 @app.route('/speaker/upload', methods=['POST'])
 def upload_wav():
     file = request.files['file']
@@ -215,6 +234,33 @@ def upload_wav():
     return '1'
 
 
+#功能-开关控制接口
+@app.route('/switch_toggle', methods=['POST'])
+def switch_toggle():
+    d_id = request.form['d_id']
+    status = request.form['status']
+    device = sqlUtil.query_device_by_id(d_id)
+    #更新开关状态
+    flag = False;
+    if '1' == status:
+        flag = True
+    #GPioUtil.change(device.code, flag)
+    #更新数据库数据
+    sqlUtil.update_device(device.id, device.name, device.code, status, device.value, device.desc)
+    return '1'
+
+
+@app.before_request
+def bf_request():
+    if request.path.find('static')== -1 and request.path.find('to_') > -1 and session.get('user_type') == None:
+        name = request.cookies.get('name')
+        password = request.cookies.get('password')
+        if name == None or password == None:
+            return render_template('index.html')
+        else:
+            login_func(name,password)
+
+
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', ssl_context='adhoc')
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', ssl_context='adhoc')
+    #app.run(host='0.0.0.0')

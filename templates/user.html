@@ -16,8 +16,7 @@
 			<ul class="mui-table-view">
 				{% for user in users%}
 					<li class="mui-table-view-cell">用户名：{{user.name}}
-						<input style="float:right;margin: 0 10px;" type="button" value="修改" />
-						{% if user.type == 0 %}
+						{% if user.type == 1 %}
 							<input onclick="del_user({{user.id}})" style="float:right;margin: 0 10px;" type="button" value="删除" />
 						{% endif %}
 					</li>
@@ -47,7 +46,7 @@
 				<label>类型</label>
 				<select id="u_type">
 					<option value="1">管理员</option>
-					<option value="0">普通用户</option>
+					<option value="0" selected='selected'>普通用户</option>
 				</select>
 			</div>
 			<div class="mui-button-row">

@@ -30,21 +30,27 @@
 					<a class="mui-navigate-right" href="#">房间名：{{room.name}}<span class="r_desc">({{room.desc}})</span></a>
 					{% for switch in room.switchs%}
 					<div class="mui-collapse-content">
-						<p style="display: inline-block;">开关名：{{switch.name}}<font class="s_desc">（{{switch.desc}}）</font></p>
+						<p style="display: inline-block;">{{switch.name}}<font class="s_desc">（{{switch.desc}}）</font></p>
 						<div s_id="{{switch.id}}" code="{{switch.code}}" class="mui-switch {% if switch.status==1 %}mui-active{% endif%} " style="float: right;">
 							<div class="mui-switch-handle" style="float: right;"></div>
 						</div>
+						{% if user_type == 1 %}
+							<input onclick="del_switch({{switch.id}})" style="float:right;margin: 0 10px;" type="button" value="删除" />
+						{% endif %}
 					</div>
 					{% endfor %}
 					{% if user_type == 1 %}
-					<div class="mui-collapse-content">
-						<button value="{{room.id}}" type="button" class="mui-btn" style="width:100%;color:gray;font-size:10px;">添加开关</button>
+					<div class="mui-collapse-content" style="text-align:center">
+						<button value="{{room.id}}" type="button" class="mui-btn add_switch" style="width:20%;color:gray;font-size:10px;">添加开关</button>
+						<button value="{{room.id}}" type="button" class="mui-btn del_room" style="width:20%;color:gray;font-size:10px;">删除房间</button>
 					</div>
 					{% endif %}
 				</li>
 				{% endfor %}
 				{% if user_type == 1 %}
-					<button id="addRoom" type="button" class="mui-btn" style="width:100%;">+</button>
+				<li style="text-align:center;padding:5px;">
+					<button id="addRoom" type="button" class="mui-btn" style="width:30%;">添加房间</button>
+				</li>
 				{% endif %}
 			</ul>
 		</div>
@@ -117,7 +123,23 @@
 	//添加房间
 	mui('.mui-content').on('tap', '#addRoom', function(e) {
 		mui('#add_room_dialog').popover('show');//show hide toggle
-    });
+  });
+	mui('.mui-collapse-content').on('tap', '.del_room', function(e) {
+		r_id = this.value;
+		mui.confirm('','您确定要删除该房间吗？',['确认','取消'],function(event){
+			if(event.index == 0){
+				mui.post('{{url_for('del_room')}}',{r_id:r_id},function(data){
+					if(data == -1){
+						mui.toast('参数错误',{ duration:1000, type:'div' })
+					}else if (data == 0){
+						mui.toast('删除失败',{ duration:1000, type:'div' })
+					}else{
+						window.location.href = '{{url_for('rooms')}}'
+					}
+				},'json');
+			}
+		})
+	});
 	mui('.mui-popover').on('tap', '#r_confirm', function(e) {
 		var r_name = document.getElementById('r_name').value;
 		var r_desc = document.getElementById('r_desc').value;
@@ -135,7 +157,12 @@
 		mui('#add_room_dialog').popover('hide');
     });
     //添加开关
-    mui('.mui-table-view-cell').on('tap', '.mui-btn', function(e) {
+    mui('.mui-table-view-cell').on('tap', '.add_switch', function(e) {
+			if(document.getElementById('s_device_id').children.length==0){
+				mui.confirm('','没有物理设备可供添加，请先创建物理设备',['确认'],function(e){
+				})
+				return;
+			}
     	document.getElementById('s_room_id').value=this.value
 			mui('#add_switch_dialog').popover('show');//show hide toggle
     });
@@ -146,16 +173,31 @@
 			params.s_device_id = document.getElementById('s_device_id').value
     	params.s_room_id = document.getElementById('s_room_id').value
     	mui.post('{{url_for('add_switch')}}',params,function(data){
-			if(data == -1){
-				mui.toast('参数错误',{ duration:1000, type:'div' })
-			}else if (data == 0){
-				mui.toast('创建失败',{ duration:1000, type:'div' })
-			}else{
-				window.location.href = '{{url_for('rooms')}}'
-			}
-		},'json');
+				if(data == -1){
+					mui.toast('参数错误',{ duration:1000, type:'div' })
+				}else if (data == 0){
+					mui.toast('创建失败',{ duration:1000, type:'div' })
+				}else{
+					window.location.href = '{{url_for('rooms')}}'
+				}
+			},'json');
     });
-     mui('#add_switch_dialog').on('tap', '#s_cancel', function(e) {
+    mui('#add_switch_dialog').on('tap', '#s_cancel', function(e) {
     	mui('#add_switch_dialog').popover('hide');//show hide toggle
     });
+		function del_switch(id){
+			mui.confirm('','您确定要删除当前开关吗？',['确认','取消'],function(e){
+				if(e.index==0){
+					mui.post('{{url_for('del_switch')}}',{s_id:id},function(data){
+						if(data == -1){
+							mui.toast('参数错误',{ duration:1000, type:'div' })
+						}else if (data == 0){
+							mui.toast('删除失败',{ duration:1000, type:'div' })
+						}else{
+							window.location.href = '{{url_for('rooms')}}'
+						}
+					},'json');
+				}
+			})
+		}
 </script>
