@@ -3,7 +3,7 @@ import json
 from flask import  Flask, render_template, redirect, url_for, request, make_response, session
 from sqlit_m import SqlUtil
 from music_m import MusicUtil
-from gpio_m import GPioUtil
+#from gpio_m import GPioUtil
 import config, os, datetime
 
 
@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config.from_object(config)
 
 sqlUtil = SqlUtil()
-gpioUtil = GPioUtil()
+#gpioUtil = GPioUtil()
 musicUtil = MusicUtil(app.config['MUSIC_DIR'], app.config['UPLOAD_FOLDER'])
 musicUtil.run_thread()
 
@@ -253,10 +253,10 @@ def switch_toggle():
     flag = False;
     if '1' == status:
         flag = True
-    if(device.desc.find('192.168.')>-1):
-        gpioUtil.change_net(device.desc, 80, device.code, status)
-    else:
-        gpioUtil.change(device.code, flag)
+    #if(device.desc.find('192.168.')>-1):
+        #gpioUtil.change_net(device.desc, 80, device.code, status)
+    #else:
+        #gpioUtil.change(device.code, flag)
     #更新数据库数据
     sqlUtil.update_device(switch.device_id, status, -1)
     return '1'
