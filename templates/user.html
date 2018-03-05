@@ -16,7 +16,7 @@
 			<ul class="mui-table-view">
 				{% for user in users%}
 					<li class="mui-table-view-cell">用户名：{{user.name}}
-						{% if user.type == 1 %}
+						{% if user_type == 1 %}
 							<input onclick="del_user({{user.id}})" style="float:right;margin: 0 10px;" type="button" value="删除" />
 						{% endif %}
 					</li>
