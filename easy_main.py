@@ -253,6 +253,9 @@ def switch_toggle():
     flag = False;
     if '1' == status:
         flag = True
+    if(devic.desc.find('192.168.')>-1):
+#     gpioUtil.change_net(device.desc, 80, device.code, status)
+    else:
 #    gpioUtil.change(device.code, flag)
     #更新数据库数据
     sqlUtil.update_device(switch.device_id, status, -1)
