@@ -25,7 +25,7 @@ def index():
 #导航-菜单
 @app.route('/to_menu')
 def menu():
-    return render_template('menu.html', user_type=session['user_type'])
+    return render_template('menu.html')
 
 
 #导航-房间
@@ -44,8 +44,25 @@ def rooms():
             switch.status = statusMap[str(switch.device_id)]
             switch.code = codeMap[str(switch.device_id)]
 
-    return render_template('rooms.html', rooms=rooms,devices=devices, user_type=session['user_type'])
+    return render_template('rooms.html', rooms=rooms,devices=devices, user_type=0)
 
+#导航-房间-配置
+@app.route('/to_rooms_config')
+def rooms_config():
+    devices = sqlUtil.query_devices();
+    statusMap = {};
+    codeMap = {};
+    for device in devices:
+        statusMap[str(device.id)]=device.status
+        codeMap[str(device.id)]=device.code
+    rooms = sqlUtil.query_rooms()
+    for room in rooms:
+        room.switchs = sqlUtil.query_switchs_by_roomid(room.id)
+        for switch in room.switchs:
+            switch.status = statusMap[str(switch.device_id)]
+            switch.code = codeMap[str(switch.device_id)]
+
+    return render_template('rooms-config.html', rooms=rooms,devices=devices, user_type=1)
 
 #导航-音乐
 @app.route('/to_music')
@@ -130,7 +147,7 @@ def del_user():
 def add_room():
     r_name = request.form['r_name']
     r_desc = request.form['r_desc']
-    if r_name == '' or r_desc == '':
+    if r_name == '' :
         return  '-1'
     flag = sqlUtil.add_room(r_name, r_desc)
     if flag:
@@ -261,7 +278,7 @@ def switch_toggle():
     sqlUtil.update_device(switch.device_id, status, -1)
     return '1'
 
-
+'''
 @app.before_request
 def bf_request():
     if request.path.find('static')== -1 and request.path.find('to_') > -1 and session.get('user_type') == None:
@@ -271,8 +288,8 @@ def bf_request():
             return render_template('index.html')
         else:
             login_func(name,password)
-
+'''
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', ssl_context='adhoc')
-    #app.run(host='0.0.0.0')
+    #app.run(host='0.0.0.0', ssl_context='adhoc')
+    app.run(host='0.0.0.0')

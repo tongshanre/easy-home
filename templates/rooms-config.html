@@ -27,18 +27,10 @@
 			<ul class="mui-table-view">
 				{% for room in rooms%}
 				<li class="mui-table-view-cell mui-collapse mui-active">
-					<a class="mui-navigate-right" href="#">房间名：{{room.name}}
-						{% if room.desc!=''%}
-							<span class="r_desc">({{room.desc}})</span>
-						{% endif %}
-					</a>
+					<a class="mui-navigate-right" href="#">房间名：{{room.name}}<span class="r_desc">({{room.desc}})</span></a>
 					{% for switch in room.switchs%}
 					<div class="mui-collapse-content">
-						<p style="display: inline-block;">{{switch.name}}
-							{% if switch.desc!= ''%}
-							<font class="s_desc">（{{switch.desc}}）</font>
-							{% endif %}
-						</p>
+						<p style="display: inline-block;">{{switch.name}}<font class="s_desc">（{{switch.desc}}）</font></p>
 						<div s_id="{{switch.id}}" code="{{switch.code}}" class="mui-switch {% if switch.status==1 %}mui-active{% endif%} " style="float: right;">
 							<div class="mui-switch-handle" style="float: right;"></div>
 						</div>
@@ -139,7 +131,7 @@
 					}else if (data == 0){
 						mui.toast('删除失败',{ duration:1000, type:'div' })
 					}else{
-						window.location.href = '{{url_for('rooms')}}'
+						window.location.href = '{{url_for('rooms_config')}}'
 					}
 				},'json');
 			}
@@ -154,7 +146,7 @@
 			}else if (data == 0){
 				mui.toast('创建失败',{ duration:1000, type:'div' })
 			}else{
-				window.location.href = '{{url_for('rooms')}}'
+				window.location.href = '{{url_for('rooms_config')}}'
 			}
 		},'json');
     });
@@ -183,7 +175,7 @@
 				}else if (data == 0){
 					mui.toast('创建失败',{ duration:1000, type:'div' })
 				}else{
-					window.location.href = '{{url_for('rooms')}}'
+					window.location.href = '{{url_for('rooms_config')}}'
 				}
 			},'json');
     });
