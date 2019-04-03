@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from flask import  Flask, render_template, redirect, url_for, request
 from sqlit_m import Persistence, Room, Switch, EspNode
+from base import GPIO_Client
 import config, json
 
 app = Flask(__name__)
@@ -123,6 +124,7 @@ def port_toggle():
     esp_node = persis.query_esp_node_by_id(esp_port.node_id)
     print(esp_node.ip, esp_port.port, status)
     # 2. 设备控制
+    GPIO_Client.sendData((esp_node.ip, 8266), esp_port.port, status)
     # 3. 持久化
     persis.update_esp_port_status_by_id(esp_port.id, status)
     return '1'
@@ -138,6 +140,7 @@ def switch_toggle():
     esp_node = persis.query_esp_node_by_id(esp_port.node_id)
     print(esp_node.ip, esp_port.port, status)
     # 2. 设备控制
+
     # 3. 持久化
     persis.update_esp_port_status_by_id(esp_port.id, status)
     return '1'
