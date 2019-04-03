@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="{{url_for('static',filename='js/mui.min.js')}}"></script>
+		<link href="{{url_for('static',filename='css/mui.min.css')}}" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设备管理</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				{% for esp_node in esp_nodes%}
+				<li class="mui-table-view-cell mui-collapse">
+					<a class="mui-navigate-right" href="#">设备编号：{{esp_node.uuid}}——{{esp_node.ip}}——
+					{%if esp_node.status == 1%}
+						<span style="color:green">online</span>
+					{%else%}
+						<span style="color:red">offline</span>
+					{%endif%}
+					</a>
+					{% for esp_port in esp_node.esp_ports %}
+					<div class="mui-collapse-content">
+						<font style="display: inline-block;margin-left:20px;">{{esp_port.port}}</font>
+						<div esp_port_id="{{esp_port.id}}" class="mui-switch {%if esp_port.status==1%}mui-active{%endif%}" style="display:inline-block;float:right;margin-right:20px;">
+						  <div class="mui-switch-handle"></div>
+						</div>
+					</div>
+					{% endfor %}
+					<div class="mui-collapse-content" style="text-align:center;">
+						<button type="button" class="mui-btn mui-btn-danger mui-btn-outlined" onclick="del_node({{esp_node.id}})">删除</button>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" charset="utf-8">
+	mui.init();
+	switchs = document.getElementsByClassName('mui-switch')
+	for(var index = 0; index < switchs.length; index++) {
+		switchs[index].addEventListener("toggle", function(event) {
+			esp_port_id = this.getAttribute('esp_port_id')
+			status = event.detail.isActive?1:0
+			new Audio('static/voice/da.wav').play();
+			mui.post('{{url_for('port_toggle')}}',{esp_port_id:esp_port_id,status:status},function(data){
+				if(data == -1){
+					mui.toast('参数错误',{ duration:1000, type:'div' })
+				}else if (data == 0){
+					mui.toast('切换失败',{ duration:1000, type:'div' })
+				}else{
+					mui.toast('切换成功',{ duration:1000, type:'div' })
+				}
+			},'json');
+		});
+	}
+	function del_node(node_id){
+		mui.confirm('','您确定要删除当前节点吗？',['确认','取消'],function(e){
+				if(e.index==0){
+					mui.post('{{url_for('del_esp_node')}}',{node_id:node_id},function(data){
+							if(data == -1){
+								mui.toast('参数错误',{ duration:1000, type:'div' })
+							}else if (data == 1){
+								window.location.href = '{{url_for('esp_nodes')}}'
+							}else{
+								mui.toast('删除失败',{ duration:1000, type:'div' })
+							}
+						},'json');
+				}
+		 });
+	}
+</script>
