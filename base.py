@@ -81,7 +81,6 @@ class GPIO_Client:
                 print("ERROR", rMsg['error'])
                 return False
         except OSError as e:
-            print(e)
             return False
         finally:
             cs.close()

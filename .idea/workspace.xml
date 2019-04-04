@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="08e07c0a-b151-4b68-9598-a39c8e0de6f1" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/easy_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/easy_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,11 +12,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="84" column="22" selection-start-line="84" selection-start-column="22" selection-end-line="84" selection-end-column="22" />
+            <state relative-caret-position="393">
+              <caret line="83" selection-start-line="83" selection-end-line="83" />
             </state>
           </provider>
         </entry>
@@ -30,11 +30,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/easy_main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="387">
-              <caret line="142" column="19" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="19" />
+              <caret line="139" column="26" selection-start-line="139" selection-start-column="26" selection-end-line="139" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -84,14 +84,14 @@
         <option value="$PROJECT_DIR$/gpio_m.py" />
         <option value="$PROJECT_DIR$/sqlit_m.py" />
         <option value="$PROJECT_DIR$/monitor_server.py" />
-        <option value="$PROJECT_DIR$/base.py" />
         <option value="$PROJECT_DIR$/easy_main.py" />
+        <option value="$PROJECT_DIR$/base.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="653" />
-    <option name="y" value="28" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="416" />
+    <option name="y" value="86" />
     <option name="width" value="1362" />
     <option name="height" value="986" />
   </component>
@@ -262,10 +262,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1874" height="1096" extended-state="6" />
+    <frame x="416" y="86" width="1362" height="986" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19880174" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27567977" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -277,7 +277,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50208336" side_tool="true" weight="0.38388124" />
       <window_info anchor="bottom" id="Python Console" order="8" weight="0.32934782" />
-      <window_info anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32848233" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.24413146" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -407,17 +407,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="84" column="22" selection-start-line="84" selection-start-column="22" selection-end-line="84" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/easy_main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="387">
-          <caret line="142" column="19" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="19" />
+          <caret line="139" column="26" selection-start-line="139" selection-start-column="26" selection-end-line="139" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="393">
+          <caret line="83" selection-start-line="83" selection-end-line="83" />
         </state>
       </provider>
     </entry>
