@@ -204,13 +204,8 @@ class Switch:
         self.room_id = params[3]
 
 
-#per = Persistence('easy_homev2.db')
-#per.db_init()
-#espNode = EspNode((1, 'aaa', '1.1.1.1', 1))
-#per.insert_esp_node(espNode, (10, 20, 30))
-#print(per.query_esp_node_by_uuid('aaa'))
 
+if __name__ == '__main__':
+    per = Persistence('easy_homev2.db')
+    per.db_init()
 
-#cursor = per.get_conn().cursor().execute("select * from ESP_PORT")
-#for node in cursor:
-#    print(node)

@@ -122,7 +122,6 @@ def port_toggle():
     status = request.form['status']
     esp_port = persis.query_esp_port_by_id(esp_port_id)
     esp_node = persis.query_esp_node_by_id(esp_port.node_id)
-    print(esp_node.ip, esp_port.port, status)
     # 2. 设备控制
     GPIO_Client.sendData((esp_node.ip, 8266), esp_port.port, status)
     # 3. 持久化
@@ -132,18 +131,19 @@ def port_toggle():
 
 @app.route('/switch_toggle', methods=['POST'])
 def switch_toggle():
-    print(request.form)
     s_id = request.form['s_id']
     status = request.form['status']
     switch = persis.query_switch_by_id(s_id)
     esp_port = persis.query_esp_port_by_id(switch.port_id)
     esp_node = persis.query_esp_node_by_id(esp_port.node_id)
-    print(esp_node.ip, esp_port.port, status)
     # 2. 设备控制
-
+    flag = GPIO_Client.sendData((esp_node.ip, 8266), esp_port.port, status)
     # 3. 持久化
-    persis.update_esp_port_status_by_id(esp_port.id, status)
-    return '1'
+    flag = flag and persis.update_esp_port_status_by_id(esp_port.id, status)
+    if flag:
+        return '1'
+    else:
+        return '0'
 
 
 @app.route('/esp_node_register', methods=['POST'])

@@ -74,15 +74,12 @@ class GPIO_Client:
             cs.send(bytes(json.dumps(msg), 'utf-8'))
             cs.settimeout(200)
             buffer = cs.recv(1024)
-            print(buffer)
             rMsg = MSG.str_to_json(str(buffer, 'utf-8'))
             if(200 == rMsg['response']):
                 return True
             else:
-                print("ERROR" , rMsg['error'])
                 return False
         except OSError:
-            print(OSError)
             return False
         finally:
             cs.close()
@@ -96,15 +93,12 @@ class GPIO_Client:
             cs.send(bytes(json.dumps(msg), 'utf-8'))
             cs.settimeout(200)
             buffer = cs.recv(1024)
-            print(buffer)
             rMsg = MSG.str_to_json(str(buffer, 'utf-8'))
             if (200 == rMsg['response']):
                 return True
             else:
-                print("ERROR", rMsg['error'])
                 return False
         except OSError:
-            print(OSError)
             return False
         finally:
             cs.close()
