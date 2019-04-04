@@ -78,10 +78,10 @@ class GPIO_Client:
             if(200 == rMsg['response']):
                 return True
             else:
-                print("ERROR" , rMsg['error'])
+                print("ERROR", rMsg['error'])
                 return False
-        except OSError:
-            print(OSError)
+        except OSError as e:
+            print(e)
             return False
         finally:
             cs.close()
