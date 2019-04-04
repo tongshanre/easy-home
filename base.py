@@ -69,21 +69,20 @@ class GPIO_Client:
         msg['code'] = 1
         msg['data'] = str(gpio) + '-' + str(value)
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        flag = True
         try:
             cs.connect(address)
             cs.send(bytes(json.dumps(msg), 'utf-8'))
             cs.settimeout(200)
             buffer = cs.recv(1024)
             rMsg = MSG.str_to_json(str(buffer, 'utf-8'))
-            if(200 == rMsg['response']):
-                return True
-            else:
-                print("ERROR", rMsg['error'])
-                return False
+            if 200 != rMsg['response']:
+                flag = False
         except OSError as e:
-            return False
+            flag = False
         finally:
             cs.close()
+        return flag
 
     @staticmethod
     def sendHeart(address):
