@@ -71,7 +71,7 @@ class GPIO_Client:
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             cs.connect(address)
-            cs.send(bytes(json.dumps(msg), 'utf-8'))
+            cs.send(bytes(json.dumps(msg)))
             cs.settimeout(200)
             buffer = cs.recv(1024)
             rMsg = MSG.str_to_json(str(buffer))
