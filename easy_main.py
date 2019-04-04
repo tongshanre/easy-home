@@ -136,14 +136,11 @@ def switch_toggle():
     switch = persis.query_switch_by_id(s_id)
     esp_port = persis.query_esp_port_by_id(switch.port_id)
     esp_node = persis.query_esp_node_by_id(esp_port.node_id)
-    # 2. 设备控制
     flag = GPIO_Client.sendData((esp_node.ip, 8266), esp_port.port, status)
-    # 3. 持久化
-    print('aaaaaaaaaaaaa'+ str(flag))
-    if False:
+    if True == flag:
         flag = persis.update_esp_port_status_by_id(esp_port.id, status)
-    if False:
-        return '11'
+    if True == flag:
+        return '1'
     else:
         return '0'
 
