@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="08e07c0a-b151-4b68-9598-a39c8e0de6f1" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/easy_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/easy_main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,11 +12,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/base.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="412">
-              <caret line="84" column="19" selection-start-line="84" selection-start-column="19" selection-end-line="84" selection-end-column="19" />
+              <caret line="84" column="19" lean-forward="true" selection-start-line="84" selection-start-column="19" selection-end-line="84" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -30,11 +30,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/easy_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="387">
-              <caret line="139" column="26" selection-start-line="139" selection-start-column="26" selection-end-line="139" selection-end-column="26" />
+            <state relative-caret-position="444">
+              <caret line="142" column="71" lean-forward="true" selection-start-line="142" selection-start-column="71" selection-end-line="142" selection-end-column="71" />
             </state>
           </provider>
         </entry>
@@ -84,8 +84,8 @@
         <option value="$PROJECT_DIR$/gpio_m.py" />
         <option value="$PROJECT_DIR$/sqlit_m.py" />
         <option value="$PROJECT_DIR$/monitor_server.py" />
-        <option value="$PROJECT_DIR$/easy_main.py" />
         <option value="$PROJECT_DIR$/base.py" />
+        <option value="$PROJECT_DIR$/easy_main.py" />
       </list>
     </option>
   </component>
@@ -407,17 +407,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/easy_main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="139" column="26" selection-start-line="139" selection-start-column="26" selection-end-line="139" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="412">
-          <caret line="84" column="19" selection-start-line="84" selection-start-column="19" selection-end-line="84" selection-end-column="19" />
+          <caret line="84" column="19" lean-forward="true" selection-start-line="84" selection-start-column="19" selection-end-line="84" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/easy_main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="444">
+          <caret line="142" column="71" lean-forward="true" selection-start-line="142" selection-start-column="71" selection-end-line="142" selection-end-column="71" />
         </state>
       </provider>
     </entry>
