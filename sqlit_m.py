@@ -7,6 +7,7 @@ class Persistence:
 
     def __init__(self, save_file):
         self.save_file=save_file
+        self.db_init()
 
     def get_conn(self):
         return sqlite3.connect(self.save_file)
