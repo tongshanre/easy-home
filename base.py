@@ -71,15 +71,17 @@ class GPIO_Client:
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             cs.connect(address)
-            cs.send(bytes(json.dumps(msg)))
+            cs.send(bytes(json.dumps(msg), 'utf-8'))
             cs.settimeout(200)
             buffer = cs.recv(1024)
-            rMsg = MSG.str_to_json(str(buffer))
+            rMsg = MSG.str_to_json(str(buffer, 'utf-8'))
             if(200 == rMsg['response']):
                 return True
             else:
+                print("ERROR" , rMsg['error'])
                 return False
         except OSError:
+            print(OSError)
             return False
         finally:
             cs.close()
@@ -93,12 +95,15 @@ class GPIO_Client:
             cs.send(bytes(json.dumps(msg), 'utf-8'))
             cs.settimeout(200)
             buffer = cs.recv(1024)
-            rMsg = MSG.str_to_json(str(buffer))
+            print(buffer)
+            rMsg = MSG.str_to_json(str(buffer, 'utf-8'))
             if (200 == rMsg['response']):
                 return True
             else:
+                print("ERROR", rMsg['error'])
                 return False
         except OSError:
+            print(OSError)
             return False
         finally:
             cs.close()
