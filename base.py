@@ -82,6 +82,7 @@ class GPIO_Client:
             flag = False
         finally:
             cs.close()
+        print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + flag)
         return flag
 
     @staticmethod
